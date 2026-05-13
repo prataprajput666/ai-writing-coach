@@ -1,18 +1,182 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>AI Writing Coach Pro</title>
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial;
+    }
+
+    body{
+      background:linear-gradient(135deg,#0f172a,#1e1b4b,#111827);
+      min-height:100vh;
+      color:white;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:20px;
+    }
+
+    .container{
+      width:100%;
+      max-width:850px;
+      background:rgba(255,255,255,0.08);
+      backdrop-filter:blur(15px);
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:25px;
+      padding:30px;
+      box-shadow:0 0 40px rgba(0,0,0,0.5);
+    }
+
+    h1{
+      text-align:center;
+      font-size:42px;
+      margin-bottom:10px;
+      background:linear-gradient(to right,#38bdf8,#8b5cf6);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+
+    .subtitle{
+      text-align:center;
+      color:#cbd5e1;
+      margin-bottom:25px;
+    }
+
+    textarea{
+      width:100%;
+      height:180px;
+      background:#111827;
+      border:none;
+      border-radius:18px;
+      padding:20px;
+      color:white;
+      font-size:18px;
+      resize:none;
+      outline:none;
+    }
+
+    button{
+      width:100%;
+      margin-top:20px;
+      padding:16px;
+      border:none;
+      border-radius:18px;
+      font-size:18px;
+      font-weight:bold;
+      cursor:pointer;
+      background:linear-gradient(to right,#38bdf8,#8b5cf6);
+      color:white;
+      transition:0.3s;
+    }
+
+    button:hover{
+      transform:scale(1.03);
+    }
+
+    .result-box{
+      margin-top:25px;
+      background:#111827;
+      border-radius:20px;
+      padding:20px;
+    }
+
+    .score{
+      font-size:28px;
+      font-weight:bold;
+      margin-bottom:15px;
+      color:#38bdf8;
+    }
+
+    .section{
+      margin-top:15px;
+    }
+
+    .label{
+      color:#8b5cf6;
+      font-weight:bold;
+      margin-bottom:8px;
+    }
+
+    ul{
+      padding-left:20px;
+      color:#cbd5e1;
+    }
+
+    .improved{
+      color:#f8fafc;
+      line-height:1.7;
+      font-size:18px;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>AI Writing Coach Pro</h1>
+
+<p class="subtitle">
+Improve grammar, clarity and writing quality instantly
+</p>
+
+<textarea id="input"
+placeholder="Write your sentence here..."></textarea>
+
+<button onclick="analyzeText()">
+Analyze Writing
+</button>
+
+<div class="result-box">
+
+<div class="score" id="score">
+Score: 0/100
+</div>
+
+<div class="section">
+<div class="label">Improved Version</div>
+
+<div class="improved" id="output">
+Your improved text will appear here...
+</div>
+</div>
+
+<div class="section">
+<div class="label">Suggestions</div>
+
+<ul id="tips">
+<li>Suggestions will appear here</li>
+</ul>
+</div>
+
+</div>
+
+</div>
+
 <script>
 
-function improveText() {
+function analyzeText(){
 
-let text = document.getElementById("input").value;
+let text =
+document.getElementById("input").value.trim();
 
-if(text.trim() === ""){
+if(text===""){
+
 document.getElementById("output").innerHTML =
 "Please enter some text.";
+
 return;
 }
 
 let improved = text;
 
-// Common corrections
 const corrections = {
 
 "i":"I",
@@ -20,62 +184,87 @@ const corrections = {
 "dont":"don't",
 "cant":"can't",
 "wont":"won't",
-"didnt":"didn't",
-"doesnt":"doesn't",
-"isnt":"isn't",
-"arent":"aren't",
-"ive":"I've",
-"ill":"I'll",
-"idk":"I don't know",
 "u":"you",
 "ur":"your",
 "pls":"please",
 "plz":"please",
-"thx":"thanks",
-"msg":"message",
-"becoz":"because",
-"bcz":"because",
-"luv":"love",
-" gud ":" good ",
-" frnd ":" friend ",
-" wanna ":" want to ",
-" gonna ":" going to "
+"gonna":"going to",
+"wanna":"want to",
+"idk":"I don't know"
 
 };
 
-// Replace words
-for (let word in corrections) {
+let mistakes = 0;
 
-let regex = new RegExp("\\b" + word + "\\b","gi");
+for(let word in corrections){
 
-improved = improved.replace(regex, corrections[word]);
+let regex =
+new RegExp("\\b"+word+"\\b","gi");
+
+if(regex.test(improved)){
+mistakes++;
 }
 
-// Remove extra spaces
-improved = improved.replace(/\s+/g," ").trim();
+improved =
+improved.replace(regex,corrections[word]);
+}
 
-// Capitalize sentence beginnings
-improved = improved.replace(/(^\w|\.\s+\w)/g,
+improved =
+improved.replace(/\s+/g," ").trim();
+
+improved =
+improved.replace(/(^\w|\.\s+\w)/g,
 function(letter){
 return letter.toUpperCase();
 });
 
-// Add punctuation if missing
 if(!/[.!?]$/.test(improved)){
 improved += ".";
 }
 
-// Improve readability
-improved = improved
-.replace(/ very very /gi," extremely ")
-.replace(/ really really /gi," really ")
-.replace(/ alot /gi," a lot ")
-.replace(/awsome/gi,"awesome")
-.replace(/goood/gi,"good");
+let score = 100 - (mistakes * 10);
 
-// Output
-document.getElementById("output").innerHTML = improved;
+if(score < 50){
+score = 50;
+}
+
+document.getElementById("score").innerHTML =
+"Score: " + score + "/100";
+
+document.getElementById("output").innerHTML =
+improved;
+
+let tips = [];
+
+if(text.length < 20){
+tips.push("Write slightly longer sentences for better clarity.");
+}
+
+if(mistakes > 0){
+tips.push("Avoid short forms like 'u', 'im', 'dont'.");
+}
+
+if(!text.includes(".")){
+tips.push("Use punctuation marks properly.");
+}
+
+tips.push("Try using more professional vocabulary.");
+tips.push("Keep sentences clear and concise.");
+
+let tipsHTML = "";
+
+for(let i=0;i<tips.length;i++){
+
+tipsHTML += "<li>" + tips[i] + "</li>";
+
+}
+
+document.getElementById("tips").innerHTML =
+tipsHTML;
 
 }
 
 </script>
+
+</body>
+</html>
