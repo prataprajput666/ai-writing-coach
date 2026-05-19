@@ -1,19 +1,15 @@
+<script>
 async function improveWriting() {
     const input = document.getElementById("inputText").value;
     const output = document.getElementById("output");
 
-    if (!input.trim()) {
-        output.innerHTML = "Please enter text.";
-        return;
-    }
+    output.innerHTML = "Improving...";
 
-    output.innerHTML = "Improving your writing...";
-
-    const API_KEY = "AIzaSyAhDTZFK_fccObCc3GPBpxF2U-A14voSM8";
+    const API_KEY = "AIzaSyCvyXjTNdtpxj6WxheyHNex5qtQf5ZLVu0";
 
     try {
         const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`,
             {
                 method: "POST",
                 headers: {
@@ -24,8 +20,7 @@ async function improveWriting() {
                         {
                             parts: [
                                 {
-                                    text:
-                                        `Correct grammar, improve vocabulary, and make this professional:\n\n${input}`
+                                    text: `Correct grammar and improve vocabulary of this text:\n${input}`
                                 }
                             ]
                         }
@@ -36,19 +31,14 @@ async function improveWriting() {
 
         const data = await response.json();
 
-        console.log(data);
-
         const result =
             data.candidates[0].content.parts[0].text;
 
-        output.innerHTML = `
-            <div class="result-box">
-                <h2>Improved Writing</h2>
-                <p>${result}</p>
-            </div>
-        `;
+        output.innerHTML = result;
+
     } catch (error) {
-        console.error(error);
         output.innerHTML = "Error connecting AI.";
+        console.error(error);
     }
 }
+</script>
